@@ -1,0 +1,29 @@
+name: Web Tests - SauceDemo
+
+on:
+  push:
+    paths:
+      - "Teste_E2E/**"
+  pull_request:
+    paths:
+      - "Teste_E2E/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: Teste_E2E
+        run: pip install -r requirements.txt
+
+      - name: Run E2E tests
+        working-directory: Teste_E2E
+        run: pytest --tb=short
