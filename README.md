@@ -106,3 +106,7 @@ As pipelines são disparadas automaticamente a cada `push` ou `pull request`, ca
 ### WEb —
 <img width="1918" height="986" alt="image" src="https://github.com/user-attachments/assets/6932ad76-0d5d-440d-b7cd-a170f582e528" />
 <img width="1909" height="793" alt="image" src="https://github.com/user-attachments/assets/0a44b981-1c90-4e6c-a3ac-69ab58bfc48c" />
+
+### Pipeline —
+<img width="1510" height="476" alt="image" src="https://github.com/user-attachments/assets/c91b9511-3dc8-4edc-92aa-56bc699e6a86" />
+
