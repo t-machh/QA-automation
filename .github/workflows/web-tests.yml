@@ -6,35 +6,30 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
-
-      - name: Instalar Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Remover chromedriver conflitante do PATH
-        run: |
-          sudo rm -f /usr/bin/chromedriver
-          sudo rm -f /usr/local/bin/chromedriver
-          echo "chromedriver removido para evitar conflito"
-
-      - name: Instalar Google Chrome estável (última versão)
+      - name: Instalar Chrome e dependências
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget
+          sudo apt-get install -y wget gnupg
           wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
           echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
+          # Instala dependências adicionais para headless
+          sudo apt-get install -y xvfb libxi6 libgconf-2-4
           google-chrome --version
 
-      - name: Instalar dependências Python
+      - name: Instalar Python dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install selenium pytest faker
+          pip install --upgrade pip
+          pip install selenium pytest faker webdriver-manager
 
-      - name: Executar testes E2E
+      - name: Rodar testes
         working-directory: ./Teste_E2E
+        env:
+          HEADLESS: "true"
         run: pytest tests/test_e2e_purchase.py -v --tb=short
