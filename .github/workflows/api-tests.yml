@@ -3,10 +3,10 @@ name: API Tests - Petstore
 on:
   push:
     paths:
-      - "api-tests/**"
+      - "Teste_API/**"
   pull_request:
     paths:
-      - "api-tests/**"
+      - "Teste_API/**"
 
 jobs:
   test:
@@ -21,9 +21,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        working-directory: api-tests
+        working-directory: Teste_API
         run: pip install -r requirements.txt
 
       - name: Run API tests
-        working-directory: api-tests
+        working-directory: Teste_API
         run: pytest --tb=short
