@@ -14,23 +14,26 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Instalar dependências
+      - name: Remover chromedriver conflitante do PATH
         run: |
-          python -m pip install --upgrade pip
-          # Instala o faker com um comando mais robusto
-          python -m pip install --force-reinstall faker
-          # Instala as outras dependências
-          python -m pip install selenium pytest webdriver-manager
-          # Verifica se o faker foi instalado corretamente
-          python -c "import faker; print('Faker instalado com sucesso!')"
+          sudo rm -f /usr/bin/chromedriver
+          sudo rm -f /usr/local/bin/chromedriver
+          echo "chromedriver removido para evitar conflito"
 
-      - name: Configurar PYTHONPATH
-        run: echo "PYTHONPATH=${{ github.workspace }}/Teste_E2E" >> $GITHUB_ENV
-
-      - name: Instalar Chrome
+      - name: Instalar Google Chrome estável (última versão)
         run: |
           sudo apt-get update
+          sudo apt-get install -y wget
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
           sudo apt-get install -y google-chrome-stable
+          google-chrome --version
+
+      - name: Instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install selenium pytest faker
 
       - name: Executar testes E2E
         working-directory: ./Teste_E2E
