@@ -6,29 +6,39 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalar Chrome e dependências
+      - name: Instalar Chrome (via chrome-for-testing)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-          # Instala dependências adicionais para headless
-          sudo apt-get install -y xvfb libxi6 libgconf-2-4
-          google-chrome --version
+          # Baixa e instala o Chrome for Testing (versão estável)
+          CHROME_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-stable.txt)
+          wget -q https://storage.googleapis.com/chrome-for-testing-public/$CHROME_VERSION/linux64/chrome-linux64.zip
+          unzip -q chrome-linux64.zip
+          sudo mv chrome-linux64 /opt/chrome
+          sudo ln -s /opt/chrome/chrome /usr/local/bin/chrome
+          chrome --version
 
-      - name: Instalar Python dependencies
+      - name: Instalar Chromedriver (via chrome-for-testing, mesma versão)
         run: |
-          pip install --upgrade pip
-          pip install selenium pytest faker webdriver-manager
+          CHROME_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-stable.txt)
+          wget -q https://storage.googleapis.com/chrome-for-testing-public/$CHROME_VERSION/linux64/chromedriver-linux64.zip
+          unzip -q chromedriver-linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+          sudo chmod +x /usr/local/bin/chromedriver
+          chromedriver --version
 
-      - name: Rodar testes
+      - name: Instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install selenium pytest faker
+
+      - name: Executar testes E2E
         working-directory: ./Teste_E2E
         env:
           HEADLESS: "true"
